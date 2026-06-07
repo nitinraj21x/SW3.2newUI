@@ -1,0 +1,57 @@
+[
+  {
+    "_id": "u1",
+    "name": "Alice Admin",
+    "email": "alice@sewingcircle.io",
+    "passwordHash": "REPLACE_WITH_BCRYPT_HASH",
+    "role": "t-1",
+    "avatar": "AA",
+    "active": true,
+    "createdAt": "2025-01-01T00:00:00.000Z",
+    "updatedAt": "2025-01-01T00:00:00.000Z"
+  },
+  {
+    "_id": "u2",
+    "name": "Bob Recruiter",
+    "email": "bob@sewingcircle.io",
+    "passwordHash": "REPLACE_WITH_BCRYPT_HASH",
+    "role": "t-2",
+    "avatar": "BR",
+    "active": true,
+    "createdAt": "2025-01-01T00:00:00.000Z",
+    "updatedAt": "2025-01-01T00:00:00.000Z"
+  },
+  {
+    "_id": "u3",
+    "name": "Carol Recruiter",
+    "email": "carol@sewingcircle.io",
+    "passwordHash": "REPLACE_WITH_BCRYPT_HASH",
+    "role": "t-2",
+    "avatar": "CR",
+    "active": true,
+    "createdAt": "2025-01-01T00:00:00.000Z",
+    "updatedAt": "2025-01-01T00:00:00.000Z"
+  },
+  {
+    "_id": "u4",
+    "name": "Dave Client",
+    "email": "dave@client.com",
+    "passwordHash": "REPLACE_WITH_BCRYPT_HASH",
+    "role": "t-3",
+    "avatar": "DC",
+    "active": true,
+    "createdAt": "2025-01-01T00:00:00.000Z",
+    "updatedAt": "2025-01-01T00:00:00.000Z"
+  },
+  {
+    "_id": "u5",
+    "name": "Eve Client",
+    "email": "eve@client.com",
+    "passwordHash": "REPLACE_WITH_BCRYPT_HASH",
+    "role": "t-3",
+    "avatar": "EC",
+    "active": true,
+    "createdAt": "2025-01-01T00:00:00.000Z",
+    "updatedAt": "2025-01-01T00:00:00.000Z"
+  }
+]

@@ -1,0 +1,9 @@
+{
+  "candidates": [],
+  "auditLogs": [],
+  "meta": {
+    "version": "1.0.0",
+    "description": "CandidatePortal local data store — mirrors MongoDB document structure for production migration",
+    "lastUpdated": null
+  }
+}

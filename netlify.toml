@@ -1,0 +1,12 @@
+# kS1 — Sewing Circle Integrated Deployment
+# Netlify configuration
+
+[build]
+  command   = "npm run build"
+  publish   = "dist"
+
+# SPA fallback — all routes served by index.html
+[[redirects]]
+  from   = "/*"
+  to     = "/index.html"
+  status = 200

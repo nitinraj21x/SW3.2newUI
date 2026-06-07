@@ -1,0 +1,169 @@
+[
+  {
+    "_id": "cand-001",
+    "firstName": "Priya",
+    "lastName": "Sharma",
+    "email": "priya.sharma@email.com",
+    "phone": "+1-555-0101",
+    "location": "San Francisco, CA",
+    "noticePeriod": "2 weeks",
+    "currentRole": "Senior Frontend Engineer",
+    "currentCompany": "TechCorp Inc.",
+    "totalExperience": 6,
+    "skills": ["React", "TypeScript", "Next.js", "Redux", "Tailwind CSS", "GraphQL", "Jest"],
+    "education": [
+      { "degree": "B.Tech Computer Science", "institution": "IIT Delhi", "year": 2018 }
+    ],
+    "workHistory": [
+      { "company": "TechCorp Inc.", "role": "Senior Frontend Engineer", "from": "2021", "to": "Present", "description": "Led frontend architecture for SaaS platform." },
+      { "company": "StartupXYZ", "role": "Frontend Developer", "from": "2018", "to": "2021", "description": "Built React-based dashboards." }
+    ],
+    "status": "Active",
+    "addedBy": "u2",
+    "sharedWith": ["u4"],
+    "notes": "Strong React ecosystem expertise. Available immediately.",
+    "linkedIn": "https://linkedin.com/in/priyasharma",
+    "resumeUrl": null,
+    "createdAt": "2025-03-10T09:00:00.000Z",
+    "updatedAt": "2025-05-01T10:00:00.000Z"
+  },
+  {
+    "_id": "cand-002",
+    "firstName": "Marcus",
+    "lastName": "Johnson",
+    "email": "marcus.j@email.com",
+    "phone": "+1-555-0202",
+    "location": "Austin, TX",
+    "noticePeriod": "1 month",
+    "currentRole": "Full Stack Developer",
+    "currentCompany": "DataFlow Systems",
+    "totalExperience": 4,
+    "skills": ["Node.js", "Express", "React", "PostgreSQL", "Docker", "AWS", "TypeScript"],
+    "education": [
+      { "degree": "B.S. Software Engineering", "institution": "UT Austin", "year": 2021 }
+    ],
+    "workHistory": [
+      { "company": "DataFlow Systems", "role": "Full Stack Developer", "from": "2022", "to": "Present", "description": "Microservices architecture on AWS." },
+      { "company": "Freelance", "role": "Web Developer", "from": "2021", "to": "2022", "description": "Various client projects." }
+    ],
+    "status": "Active",
+    "addedBy": "u2",
+    "sharedWith": [],
+    "notes": "Solid full-stack profile. Open to remote.",
+    "linkedIn": "https://linkedin.com/in/marcusjohnson",
+    "resumeUrl": null,
+    "createdAt": "2025-03-15T11:30:00.000Z",
+    "updatedAt": "2025-04-20T00:00:00.000Z"
+  },
+  {
+    "_id": "cand-003",
+    "firstName": "Aisha",
+    "lastName": "Patel",
+    "email": "aisha.patel@email.com",
+    "phone": "+1-555-0303",
+    "location": "New York, NY",
+    "noticePeriod": "Immediate",
+    "currentRole": "Data Scientist",
+    "currentCompany": "AnalyticsHub",
+    "totalExperience": 5,
+    "skills": ["Python", "Machine Learning", "TensorFlow", "PyTorch", "SQL", "Data Science", "Pandas", "NumPy", "Scikit-learn"],
+    "education": [
+      { "degree": "M.S. Data Science", "institution": "Columbia University", "year": 2020 },
+      { "degree": "B.S. Mathematics", "institution": "NYU", "year": 2018 }
+    ],
+    "workHistory": [
+      { "company": "AnalyticsHub", "role": "Data Scientist", "from": "2020", "to": "Present", "description": "ML model development for financial forecasting." }
+    ],
+    "status": "Interviewing",
+    "addedBy": "u3",
+    "sharedWith": ["u4", "u5"],
+    "notes": "Exceptional ML background. PhD-level research experience.",
+    "linkedIn": "https://linkedin.com/in/aishapatel",
+    "resumeUrl": null,
+    "createdAt": "2025-04-01T14:00:00.000Z",
+    "updatedAt": "2025-05-10T00:00:00.000Z"
+  },
+  {
+    "_id": "cand-004",
+    "firstName": "Liam",
+    "lastName": "O'Brien",
+    "email": "liam.obrien@email.com",
+    "phone": "+1-555-0404",
+    "location": "Chicago, IL",
+    "noticePeriod": "3 months",
+    "currentRole": "DevOps Engineer",
+    "currentCompany": "CloudNative Co.",
+    "totalExperience": 7,
+    "skills": ["Kubernetes", "Docker", "Terraform", "AWS", "GCP", "CI/CD", "Ansible", "Linux", "Python"],
+    "education": [
+      { "degree": "B.S. Computer Science", "institution": "University of Illinois", "year": 2018 }
+    ],
+    "workHistory": [
+      { "company": "CloudNative Co.", "role": "Senior DevOps Engineer", "from": "2020", "to": "Present", "description": "Managed multi-cloud Kubernetes clusters." },
+      { "company": "SysOps Ltd.", "role": "DevOps Engineer", "from": "2018", "to": "2020", "description": "CI/CD pipeline automation." }
+    ],
+    "status": "Active",
+    "addedBy": "u3",
+    "sharedWith": ["u5"],
+    "notes": "CKA certified. Strong IaC background.",
+    "linkedIn": "https://linkedin.com/in/liamobrien",
+    "resumeUrl": null,
+    "createdAt": "2025-04-05T09:00:00.000Z",
+    "updatedAt": "2025-04-25T00:00:00.000Z"
+  },
+  {
+    "_id": "cand-005",
+    "firstName": "Sofia",
+    "lastName": "Reyes",
+    "email": "sofia.reyes@email.com",
+    "phone": "+1-555-0505",
+    "location": "Miami, FL",
+    "noticePeriod": "2 weeks",
+    "currentRole": "Backend Engineer",
+    "currentCompany": "FinTech Solutions",
+    "totalExperience": 3,
+    "skills": ["Java", "Spring Boot", "PostgreSQL", "Microservices", "REST API", "Kafka", "Redis"],
+    "education": [
+      { "degree": "B.S. Computer Engineering", "institution": "University of Miami", "year": 2022 }
+    ],
+    "workHistory": [
+      { "company": "FinTech Solutions", "role": "Backend Engineer", "from": "2022", "to": "Present", "description": "Payment processing microservices." }
+    ],
+    "status": "Placed",
+    "addedBy": "u2",
+    "sharedWith": [],
+    "notes": "Strong Java/Spring profile. Placed at client.",
+    "linkedIn": "https://linkedin.com/in/sofiareyes",
+    "resumeUrl": null,
+    "createdAt": "2025-02-20T00:00:00.000Z",
+    "updatedAt": "2025-03-15T00:00:00.000Z"
+  },
+  {
+    "_id": "cand-006",
+    "firstName": "Kenji",
+    "lastName": "Tanaka",
+    "email": "kenji.tanaka@email.com",
+    "phone": "+1-555-0606",
+    "location": "Seattle, WA",
+    "noticePeriod": "1 month",
+    "currentRole": "Mobile Developer",
+    "currentCompany": "AppWorks Studio",
+    "totalExperience": 5,
+    "skills": ["React Native", "React", "TypeScript", "JavaScript", "Redux", "iOS", "Android", "Firebase"],
+    "education": [
+      { "degree": "B.S. Computer Science", "institution": "University of Washington", "year": 2020 }
+    ],
+    "workHistory": [
+      { "company": "AppWorks Studio", "role": "Senior Mobile Developer", "from": "2021", "to": "Present", "description": "Cross-platform mobile apps." },
+      { "company": "MobileFirst Inc.", "role": "Mobile Developer", "from": "2020", "to": "2021", "description": "iOS/Android development." }
+    ],
+    "status": "Active",
+    "addedBy": "u3",
+    "sharedWith": ["u4"],
+    "notes": "Strong React Native + native experience.",
+    "linkedIn": "https://linkedin.com/in/kenjitanaka",
+    "resumeUrl": null,
+    "createdAt": "2025-05-01T00:00:00.000Z",
+    "updatedAt": "2025-05-15T00:00:00.000Z"
+  }
+]
