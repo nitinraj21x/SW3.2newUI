@@ -1,4 +1,5 @@
 import React, { useState, Suspense } from 'react';
+import './index.css'; // scoped to public site only
 import LoadingPage from './components/loading/LoadingPage';
 import { I18nProvider } from './contexts/I18nContext';
 
