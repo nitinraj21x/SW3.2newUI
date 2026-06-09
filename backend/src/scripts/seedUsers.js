@@ -22,26 +22,25 @@ import User     from '../models/User.js';
 
 const SEED = [
   {
-    name:   'Asha Admin',
-    email:  'asha@sewingcircle.io',
-    // Temporary password — MUST be changed on first login
+    name:     'SewingCircleAdmin100626',
+    email:    'asha@sewingcircle.io',
     password: 'TempAdmin@2025!',
-    role:   'admin',
-    avatar: 'AA',
+    role:     'admin',
+    avatar:   'SA',
   },
   {
-    name:   'Senior Staff One',
-    email:  'staff1@sewingcircle.io',
+    name:     'AshaTvmSc200313',
+    email:    'staff1@sewingcircle.io',
     password: 'TempStaff@2025!',
-    role:   't-1',
-    avatar: 'S1',
+    role:     't-1',
+    avatar:   'AT',
   },
   {
-    name:   'Senior Staff Two',
-    email:  'staff2@sewingcircle.io',
+    name:     'VidyaMayaSc205293',
+    email:    'staff2@sewingcircle.io',
     password: 'TempStaff@2025!',
-    role:   't-1',
-    avatar: 'S2',
+    role:     't-1',
+    avatar:   'VM',
   },
 ];
 
