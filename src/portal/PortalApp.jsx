@@ -35,12 +35,12 @@ export default function PortalApp() {
 
     // Fetch data visible to this role
     fetchCandidates();
-    if (user.role === 't-1' || user.role === 't-2') fetchJobs();
-    if (user.role === 't-1') { fetchEvents(); fetchAuditLogs(); }
+    if (user.role === 'admin' || user.role === 't-1' || user.role === 't-2') fetchJobs();
+    if (user.role === 'admin' || user.role === 't-1') { fetchEvents(); fetchAuditLogs(); }
   }, [status, user]); // eslint-disable-line
 
-  // Loading / init spinner
-  if (status === 'idle' || (status === 'loading' && !user)) {
+  // Loading / init spinner — show while verifying token on mount
+  if (status === 'idle' || status === 'loading') {
     return (
       <div className="min-h-screen flex items-center justify-center"
         style={{ backgroundColor: 'var(--bg-base)' }}>
