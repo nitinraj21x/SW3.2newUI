@@ -26,8 +26,10 @@ const PORT = process.env.PORT || 4000;
 app.use(helmet());
 
 // ── CORS ──────────────────────────────────────────────────────────────────────
+// Support both FRONTEND_ORIGIN (kS2) and FRONTEND_URL (legacy Render var)
+const frontendOrigin = process.env.FRONTEND_ORIGIN || process.env.FRONTEND_URL || 'http://localhost:5173';
 app.use(cors({
-  origin:      process.env.FRONTEND_ORIGIN || 'http://localhost:5173',
+  origin:      frontendOrigin,
   credentials: true,
   methods:     ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],

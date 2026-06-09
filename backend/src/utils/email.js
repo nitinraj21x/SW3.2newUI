@@ -60,7 +60,7 @@ export async function sendClientWelcome(toEmail, clientName) {
           To sign in, visit the portal and enter your email address —
           a one-time code will be sent to your inbox.
         </p>
-        <a href="${process.env.FRONTEND_ORIGIN}/portal"
+        <a href="${(process.env.FRONTEND_ORIGIN || process.env.FRONTEND_URL)}/portal"
            style="display:inline-block;background:#06b6d4;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:600;">
           Go to Portal
         </a>
@@ -70,3 +70,4 @@ export async function sendClientWelcome(toEmail, clientName) {
       </div>`,
   });
 }
+
