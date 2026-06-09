@@ -161,6 +161,7 @@ const Navigation = React.memo(({ loadingDone = false }) => {
             {navLinks.map((link) => (
               <a key={link.name} href={link.href} className="navigation-link">{link.name}</a>
             ))}
+          </div>
 
           {/* Mobile Hamburger */}
           <button className="mobile-menu-button" onClick={toggleMobileMenu} aria-label="Toggle mobile menu">
