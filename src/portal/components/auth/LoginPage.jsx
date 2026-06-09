@@ -115,7 +115,107 @@ function OtpInput({ value, onChange, length = 6 }) {
   );
 }
 
-// ── Step: Choose login type ───────────────────────────────────────────────────
+// ── Step: Force password change (first login) ─────────────────────────────────
+const PW_RULES = [
+  { test: (p) => p.length >= 8,         label: 'At least 8 characters' },
+  { test: (p) => /[A-Z]/.test(p),       label: 'One uppercase letter' },
+  { test: (p) => /[a-z]/.test(p),       label: 'One lowercase letter' },
+  { test: (p) => /\d/.test(p),          label: 'One number' },
+  { test: (p) => /[^A-Za-z0-9]/.test(p), label: 'One special character' },
+];
+
+function PasswordStrength({ password }) {
+  if (!password) return null;
+  const passed = PW_RULES.filter(r => r.test(password)).length;
+  const pct = (passed / PW_RULES.length) * 100;
+  const color = pct < 40 ? '#ef4444' : pct < 80 ? '#f59e0b' : '#22c55e';
+  return (
+    <div className="space-y-2">
+      <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--border-default)' }}>
+        <div className="h-full rounded-full transition-all duration-300" style={{ width: `${pct}%`, backgroundColor: color }} />
+      </div>
+      <ul className="grid grid-cols-2 gap-x-3 gap-y-1">
+        {PW_RULES.map((r) => {
+          const ok = r.test(password);
+          return (
+            <li key={r.label} className="flex items-center gap-1 text-xs"
+              style={{ color: ok ? '#22c55e' : 'var(--text-faint)' }}>
+              <span>{ok ? '✓' : '·'}</span> {r.label}
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+}
+
+function StepChangePassword() {
+  const { changePassword, error, clearError, status } = useAuth();
+  const loading = status === 'loading';
+  const [pw, setPw]       = useState('');
+  const [confirm, setConfirm] = useState('');
+  const [showPw, setShowPw]   = useState(false);
+  const [localErr, setLocalErr] = useState('');
+
+  const allRulesPassed = PW_RULES.every(r => r.test(pw));
+
+  const submit = (e) => {
+    e.preventDefault();
+    setLocalErr('');
+    clearError();
+    if (!allRulesPassed) { setLocalErr('Password does not meet all requirements.'); return; }
+    if (pw !== confirm)  { setLocalErr('Passwords do not match.'); return; }
+    changePassword(pw);
+  };
+
+  return (
+    <Card>
+      <div>
+        <h2 className="text-base font-semibold" style={{ color: 'var(--text-primary)' }}>
+          Set your password
+        </h2>
+        <p className="text-xs mt-0.5" style={{ color: 'var(--text-faint)' }}>
+          This is your first login. Choose a strong password to continue.
+        </p>
+      </div>
+      <form onSubmit={submit} noValidate className="space-y-4">
+        {/* New password */}
+        <div className="space-y-1.5">
+          <label className="block text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>
+            New password
+          </label>
+          <div className="relative">
+            <input
+              type={showPw ? 'text' : 'password'} value={pw}
+              onChange={e => setPw(e.target.value)}
+              placeholder="Choose a strong password" required autoComplete="new-password"
+              className="w-full px-3 py-2.5 pr-10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500"
+              style={{ backgroundColor: 'var(--bg-input)', border: '1px solid var(--border-default)', color: 'var(--text-primary)' }} />
+            <button type="button" onClick={() => setShowPw(s => !s)}
+              className="absolute right-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--text-faint)' }}>
+              {showPw ? <EyeOff size={15} /> : <Eye size={15} />}
+            </button>
+          </div>
+          <PasswordStrength password={pw} />
+        </div>
+        {/* Confirm */}
+        <div className="space-y-1.5">
+          <label className="block text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>
+            Confirm password
+          </label>
+          <input
+            type="password" value={confirm}
+            onChange={e => setConfirm(e.target.value)}
+            placeholder="Repeat your password" required autoComplete="new-password"
+            className="w-full px-3 py-2.5 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500"
+            style={{ backgroundColor: 'var(--bg-input)', border: '1px solid var(--border-default)', color: 'var(--text-primary)' }} />
+        </div>
+        <ErrorBanner msg={localErr || error} />
+        <SubmitBtn loading={loading} label="Set Password & Continue" icon={ShieldCheck} />
+      </form>
+    </Card>
+  );
+}
 function StepChooseType({ onStaff, onClient }) {
   return (
     <Card>
@@ -401,6 +501,7 @@ export function LoginPage() {
   const isIdle   = status === 'unauthenticated' || status === 'idle';
   const isStep2  = status === 'step1_done';
   const isSetup  = status === 'setup_totp';
+  const isChangePw = status === 'change_password';
 
   // Clean up type key on successful auth
   useEffect(() => {
@@ -410,7 +511,7 @@ export function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center p-4"
       style={{ backgroundColor: 'var(--bg-base)' }}>
-      <div className="w-full max-w-sm space-y-8">
+      <div className={`w-full space-y-8 ${isChangePw ? 'max-w-md' : 'max-w-sm'}`}>
 
         {/* Branding */}
         <div className="flex flex-col items-center gap-4">
@@ -436,6 +537,9 @@ export function LoginPage() {
 
         {isIdle && isStaff  && <StepPassword onBack={resetType} />}
         {isIdle && isClient && <StepClientEmail onBack={resetType} />}
+
+        {/* First-login forced password change — shown before TOTP setup */}
+        {isChangePw && <StepChangePassword />}
 
         {isSetup && <StepSetupTotp />}
 

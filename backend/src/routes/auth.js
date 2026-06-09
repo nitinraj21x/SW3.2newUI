@@ -22,7 +22,7 @@ import crypto        from 'crypto';
 import { authenticator } from 'otplib';
 import { body }      from 'express-validator';
 import { validate }  from '../middleware/validate.js';
-import { requireAuth, requireAdmin } from '../middleware/auth.js';
+import { requireAuth, requireAdmin, requireSuperAdmin } from '../middleware/auth.js';
 import User, { encryptTotpSecret, decryptTotpSecret } from '../models/User.js';
 import AuditLog      from '../models/AuditLog.js';
 import { sendClientOtp, sendClientWelcome } from '../utils/email.js';
@@ -89,7 +89,7 @@ function verifyMfaToken(token) {
   return payload;
 }
 
-// ── t-1/t-2: Step 1 — Password ───────────────────────────────────────────────
+// ── t-1/t-2/admin: Step 1 — Password ────────────────────────────────────────
 router.post('/login', validate([
   body('email').isEmail().normalizeEmail().trim(),
   body('password').isLength({ min: 6 }).trim(),
@@ -97,7 +97,7 @@ router.post('/login', validate([
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email })
-      .select('+passwordHash +totpEnabled');
+      .select('+passwordHash +totpEnabled +mustChangePassword');
 
     // Generic rejection — never reveal whether email exists
     if (!user || !user.active || user.role === 't-3' || !user.passwordHash) {
@@ -109,8 +109,13 @@ router.post('/login', validate([
       return res.status(401).json({ error: 'Invalid email or password.' });
     }
 
-    const mfaToken = signMfaToken(user._id);
+    // First-login: force password change before anything else
+    if (user.mustChangePassword) {
+      const mfaToken = signMfaToken(user._id);
+      return res.json({ mustChangePassword: true, mfaToken });
+    }
 
+    const mfaToken = signMfaToken(user._id);
     if (!user.totpEnabled) {
       return res.json({ mfaPending: true, totpSetupRequired: true, mfaToken });
     }
@@ -295,6 +300,47 @@ router.post('/verify-otp', validate([
     const token = signSessionToken(user);
     await AuditLog.create({ action: 'LOGIN', userId: user._id, userName: user.name, userRole: user.role, detail: 'Client login via email OTP.', ip: req.ip });
     res.json({ token, user: safeUser(user) });
+  } catch (err) { next(err); }
+});
+
+// ── Force password change (first login) ──────────────────────────────────────
+// Validates the new password strength and clears mustChangePassword flag.
+// Uses the mfaToken from step-1 login so no session JWT is needed yet.
+const PW_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$/;
+
+router.post('/change-password', validate([
+  body('mfaToken').notEmpty(),
+  body('newPassword')
+    .isLength({ min: 8 }).withMessage('Password must be at least 8 characters.')
+    .matches(PW_REGEX).withMessage('Password must contain uppercase, lowercase, a number and a special character.'),
+]), async (req, res, next) => {
+  try {
+    const { mfaToken, newPassword } = req.body;
+    const payload = verifyMfaToken(mfaToken);
+    const user    = await User.findById(payload.uid)
+      .select('+passwordHash +mustChangePassword +totpEnabled');
+
+    if (!user || !user.active) return res.status(404).json({ error: 'User not found.' });
+    if (!user.mustChangePassword) return res.status(400).json({ error: 'Password change not required.' });
+
+    // Ensure new password is not the same as the temporary one
+    const same = await bcrypt.compare(newPassword, user.passwordHash);
+    if (same) return res.status(422).json({ error: 'New password must be different from your current password.' });
+
+    const passwordHash = await bcrypt.hash(newPassword, 12);
+    await User.findByIdAndUpdate(user._id, { passwordHash, mustChangePassword: false });
+
+    await AuditLog.create({
+      action: 'PASSWORD_CHANGED', userId: user._id, userName: user.name,
+      userRole: user.role, detail: 'User changed password on first login.', ip: req.ip,
+    });
+
+    // Now proceed to TOTP setup (all staff must configure TOTP after first login)
+    const newMfaToken = signMfaToken(user._id);
+    if (!user.totpEnabled) {
+      return res.json({ mfaPending: true, totpSetupRequired: true, mfaToken: newMfaToken });
+    }
+    return res.json({ mfaPending: true, totpSetupRequired: false, mfaToken: newMfaToken });
   } catch (err) { next(err); }
 });
 

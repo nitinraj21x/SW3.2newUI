@@ -22,6 +22,9 @@ import userRoutes      from './routes/users.js';
 const app  = express();
 const PORT = process.env.PORT || 4000;
 
+// ── Trust Render's reverse proxy so req.ip = real client IP ──────────────────
+app.set('trust proxy', 1);
+
 // ── Security headers ──────────────────────────────────────────────────────────
 app.use(helmet());
 

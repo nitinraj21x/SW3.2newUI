@@ -161,29 +161,6 @@ const Navigation = React.memo(({ loadingDone = false }) => {
             {navLinks.map((link) => (
               <a key={link.name} href={link.href} className="navigation-link">{link.name}</a>
             ))}
-            {/* Portal link — opens employee portal */}
-            <a
-              href="/portal"
-              className="navigation-link portal-link"
-              style={{
-                marginLeft: '8px',
-                padding: '6px 14px',
-                borderRadius: '8px',
-                background: 'linear-gradient(135deg, #06b6d4, #0891b2)',
-                color: '#fff',
-                fontWeight: 600,
-                fontSize: '0.8rem',
-                letterSpacing: '0.04em',
-                textDecoration: 'none',
-                boxShadow: '0 2px 8px rgba(6,182,212,0.35)',
-                transition: 'opacity 0.15s',
-              }}
-              onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.85'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; }}
-            >
-              Staff Portal
-            </a>
-          </div>
 
           {/* Mobile Hamburger */}
           <button className="mobile-menu-button" onClick={toggleMobileMenu} aria-label="Toggle mobile menu">
@@ -199,10 +176,6 @@ const Navigation = React.memo(({ loadingDone = false }) => {
                 {link.name}
               </a>
             ))}
-            <a href="/portal" className="mobile-menu-link" onClick={closeMobileMenu}
-              style={{ color: '#06b6d4', fontWeight: 600 }}>
-              Staff Portal →
-            </a>
           </div>
         </div>
       </nav>

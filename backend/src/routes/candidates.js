@@ -150,8 +150,13 @@ router.delete('/:id', requireAdmin, async (req, res, next) => {
 // ── PATCH /api/candidates/:id/share — t-1 and t-2 ────────────────────────────
 router.patch('/:id/share', requireRecruiter, async (req, res, next) => {
   try {
-    const { clientUserId, action } = req.body; // action: 'add' | 'remove'
+    const { clientUserId, action } = req.body;
     if (!clientUserId) return res.status(400).json({ error: 'clientUserId required.' });
+
+    // Validate clientUserId is a valid MongoDB ObjectId
+    if (!/^[a-f\d]{24}$/i.test(clientUserId)) {
+      return res.status(422).json({ error: 'Invalid clientUserId format.' });
+    }
 
     const candidate = await Candidate.findById(req.params.id);
     if (!candidate) return res.status(404).json({ error: 'Candidate not found.' });
@@ -186,6 +191,12 @@ router.patch('/:id/share', requireRecruiter, async (req, res, next) => {
 router.post('/:id/resume', requireRecruiter, upload.single('resume'), async (req, res, next) => {
   try {
     if (!req.file) return res.status(400).json({ error: 'No file uploaded.' });
+
+    // Validate file type — only PDF allowed
+    const allowedMimes = ['application/pdf'];
+    if (!allowedMimes.includes(req.file.mimetype)) {
+      return res.status(422).json({ error: 'Only PDF files are accepted for resumes.' });
+    }
 
     const candidate = await Candidate.findById(req.params.id);
     if (!candidate) return res.status(404).json({ error: 'Candidate not found.' });

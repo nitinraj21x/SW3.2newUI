@@ -11,31 +11,42 @@ import { api }    from '../utils/api';
 import { DEFAULT_SCORING_CONFIG } from '../utils/scoring';
 
 // ── RBAC permission matrix ────────────────────────────────────────────────────
+// admin: all t-1 powers + user management
+// t-1:   full portal (candidates, jobs, events, scoring, audit) — no user management
+// t-2:   own candidates + jobs view only
+// t-3:   view shared candidates only
+
+const isAdmin    = (r) => r === 'admin';
+const isTopStaff = (r) => r === 'admin' || r === 't-1';
+const isStaff    = (r) => r === 'admin' || r === 't-1' || r === 't-2';
+
 export const PERMISSIONS = {
   canViewTab: (role, tab) => {
-    if (role === 't-1') return true;
-    if (role === 't-2') return ['candidates', 'jobs'].includes(tab);
-    if (role === 't-3') return tab === 'candidates';
+    if (isTopStaff(role)) return true;
+    if (role === 't-2')   return ['candidates', 'jobs'].includes(tab);
+    if (role === 't-3')   return tab === 'candidates';
     return false;
   },
-  canAddCandidate:    (role) => role === 't-1' || role === 't-2',
+  canAddCandidate:    (role) => isStaff(role),
   canEditCandidate:   (role, candidate, userId) => {
-    if (role === 't-1') return true;
-    if (role === 't-2') return String(candidate.addedBy) === String(userId);
+    if (isTopStaff(role)) return true;
+    if (role === 't-2')   return String(candidate.addedBy) === String(userId);
     return false;
   },
-  canDeleteCandidate: (role) => role === 't-1',
-  canShareCandidate:  (role) => role === 't-1' || role === 't-2',
-  canBulkEmail:       (role) => role === 't-1' || role === 't-2',
-  canExportCSV:       (role) => role === 't-1' || role === 't-2',
-  canAddJob:          (role) => role === 't-1',
-  canEditJob:         (role) => role === 't-1',
-  canDeleteJob:       (role) => role === 't-1',
-  canViewJobs:        (role) => role === 't-1' || role === 't-2',
-  canViewScoring:     (role) => role === 't-1',
-  canViewAudit:       (role) => role === 't-1',
-  canViewEvents:      (role) => role === 't-1',
-  canManageEvents:    (role) => role === 't-1',
+  canDeleteCandidate: (role) => isTopStaff(role),
+  canShareCandidate:  (role) => isStaff(role),
+  canBulkEmail:       (role) => isStaff(role),
+  canExportCSV:       (role) => isStaff(role),
+  canAddJob:          (role) => isTopStaff(role),
+  canEditJob:         (role) => isTopStaff(role),
+  canDeleteJob:       (role) => isTopStaff(role),
+  canViewJobs:        (role) => isStaff(role),
+  canViewScoring:     (role) => isTopStaff(role),
+  canViewAudit:       (role) => isTopStaff(role),
+  canViewEvents:      (role) => isTopStaff(role),
+  canManageEvents:    (role) => isTopStaff(role),
+  // User management: admin only
+  canManageUsers:     (role) => isAdmin(role),
 };
 
 const useStore = create((set, get) => ({

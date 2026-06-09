@@ -52,24 +52,19 @@ export const api = {
 
   // ── Auth ──────────────────────────────────────────────────────────────────
   auth: {
-    // t-1/t-2: step 1 — password
-    login:         (email, password)     => request('POST', '/auth/login', { email, password }),
-    // t-1/t-2: step 2 — verify TOTP
-    verifyTotp:    (mfaToken, totpCode)  => request('POST', '/auth/verify-totp', { mfaToken, totpCode }),
-    // t-1/t-2: TOTP first-time setup
-    setupTotp:     (mfaToken)            => request('POST', '/auth/setup-totp', { mfaToken }),
-    confirmTotp:   (mfaToken, totpCode)  => request('POST', '/auth/confirm-totp', { mfaToken, totpCode }),
-    // t-3: email OTP
-    requestOtp:    (email)               => request('POST', '/auth/request-otp', { email }),
-    verifyOtp:     (email, otp)          => request('POST', '/auth/verify-otp', { email, otp }),
-    // Session
-    logout:        ()                    => request('POST', '/auth/logout'),
-    me:            ()                    => request('GET',  '/auth/me'),
-    // Client management (t-1 only)
-    createClient:  (name, email)         => request('POST', '/auth/clients', { name, email }),
-    listClients:   ()                    => request('GET',  '/auth/clients'),
-    toggleClient:  (id)                  => request('PATCH', `/auth/clients/${id}/toggle`),
-    deleteClient:  (id)                  => request('DELETE', `/auth/clients/${id}`),
+    login:          (email, password)        => request('POST', '/auth/login', { email, password }),
+    changePassword: (mfaToken, newPassword)  => request('POST', '/auth/change-password', { mfaToken, newPassword }),
+    verifyTotp:     (mfaToken, totpCode)     => request('POST', '/auth/verify-totp', { mfaToken, totpCode }),
+    setupTotp:      (mfaToken)               => request('POST', '/auth/setup-totp', { mfaToken }),
+    confirmTotp:    (mfaToken, totpCode)     => request('POST', '/auth/confirm-totp', { mfaToken, totpCode }),
+    requestOtp:     (email)                  => request('POST', '/auth/request-otp', { email }),
+    verifyOtp:      (email, otp)             => request('POST', '/auth/verify-otp', { email, otp }),
+    logout:         ()                       => request('POST', '/auth/logout'),
+    me:             ()                       => request('GET',  '/auth/me'),
+    createClient:   (name, email)            => request('POST', '/auth/clients', { name, email }),
+    listClients:    ()                       => request('GET',  '/auth/clients'),
+    toggleClient:   (id)                     => request('PATCH', `/auth/clients/${id}/toggle`),
+    deleteClient:   (id)                     => request('DELETE', `/auth/clients/${id}`),
   },
 
   // ── Candidates ────────────────────────────────────────────────────────────
@@ -114,10 +109,13 @@ export const api = {
     list: (page = 1, limit = 50) => request('GET', `/audit?page=${page}&limit=${limit}`),
   },
 
-  // ── Users ─────────────────────────────────────────────────────────────────
+  // ── Users (admin only) ────────────────────────────────────────────────────
   users: {
-    list:   ()            => request('GET',   '/users'),
-    create: (data)        => request('POST',  '/users', data),
-    toggle: (id)          => request('PATCH', `/users/${id}/toggle`),
+    list:          ()                   => request('GET',    '/users'),
+    create:        (data)               => request('POST',   '/users', data),
+    update:        (id, data)           => request('PATCH',  `/users/${id}`, data),
+    toggle:        (id)                 => request('PATCH',  `/users/${id}/toggle`),
+    resetPassword: (id, password)       => request('PATCH',  `/users/${id}/reset-password`, { password }),
+    delete:        (id)                 => request('DELETE', `/users/${id}`),
   },
 };

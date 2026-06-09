@@ -1,14 +1,12 @@
 /**
  * useAuth.js — JWT session management for kS2
  *
- * Token is stored in sessionStorage (cleared on tab close).
- * On page refresh, token is re-verified against GET /api/auth/me.
- *
  * Auth state machine:
- *   idle        → no session attempt yet (initial)
- *   loading     → verifying existing token or processing login
- *   step1_done  → t-1/t-2 password verified, awaiting TOTP/setup
- *   setup_totp  → first-time TOTP setup: showing QR code
+ *   idle             → initial
+ *   loading          → processing
+ *   change_password  → first login: must set new password before proceeding
+ *   step1_done       → password verified, awaiting TOTP code
+ *   setup_totp       → first TOTP setup: showing QR
  *   authenticated
  *   unauthenticated
  */
@@ -40,15 +38,16 @@ const useAuth = create((set, get) => ({
     }
   },
 
-  // ── t-1/t-2: Step 1 — Password ────────────────────────────────────────────
+  // ── t-1/t-2/admin: Step 1 — Password ────────────────────────────────────────
   loginPassword: async (email, password) => {
     set({ status: 'loading', error: null });
     try {
       const res = await api.auth.login(email, password);
-      // res = { mfaPending, totpSetupRequired, mfaToken, message }
-      if (res.mfaPending && res.totpSetupRequired) {
+      if (res.mustChangePassword) {
+        // First login — force password change before TOTP
+        set({ status: 'change_password', mfaToken: res.mfaToken, error: null });
+      } else if (res.mfaPending && res.totpSetupRequired) {
         set({ status: 'setup_totp', mfaToken: res.mfaToken, error: null });
-        // Immediately fetch the setup data (secret + QR URI)
         const setup = await api.auth.setupTotp(res.mfaToken);
         set({ totpSetupData: setup });
       } else if (res.mfaPending) {
@@ -56,6 +55,25 @@ const useAuth = create((set, get) => ({
       }
     } catch (err) {
       set({ status: 'unauthenticated', error: err.message });
+    }
+  },
+
+  // ── Force password change (first login) ───────────────────────────────────
+  changePassword: async (newPassword) => {
+    set({ status: 'loading', error: null });
+    try {
+      const { mfaToken } = get();
+      const res = await api.auth.changePassword(mfaToken, newPassword);
+      // After password change, proceed to TOTP setup or verification
+      if (res.totpSetupRequired) {
+        set({ status: 'setup_totp', mfaToken: res.mfaToken, error: null });
+        const setup = await api.auth.setupTotp(res.mfaToken);
+        set({ totpSetupData: setup });
+      } else {
+        set({ status: 'step1_done', mfaToken: res.mfaToken, error: null });
+      }
+    } catch (err) {
+      set({ status: 'change_password', error: err.message });
     }
   },
 

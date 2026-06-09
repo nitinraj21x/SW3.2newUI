@@ -1,5 +1,11 @@
 /**
  * auth.js — JWT verification + RBAC middleware
+ *
+ * Role hierarchy:
+ *   admin  — super-user (all t-1 powers + user management)
+ *   t-1    — senior staff (full portal access)
+ *   t-2    — recruiter (own candidates + jobs view)
+ *   t-3    — client (shared profiles, email OTP)
  */
 import jwt from 'jsonwebtoken';
 
@@ -27,6 +33,15 @@ export function requireRole(...roles) {
   };
 }
 
-export const requireAdmin     = requireRole('t-1');
-export const requireRecruiter = requireRole('t-1', 't-2');
-export const requireAnyUser   = requireRole('t-1', 't-2', 't-3');
+// ── Convenience shortcuts ─────────────────────────────────────────────────────
+// requireSuperAdmin  — only the admin role (user management operations)
+export const requireSuperAdmin  = requireRole('admin');
+
+// requireAdmin       — admin + t-1 (portal operations: events, audit, etc.)
+export const requireAdmin       = requireRole('admin', 't-1');
+
+// requireRecruiter   — admin + t-1 + t-2
+export const requireRecruiter   = requireRole('admin', 't-1', 't-2');
+
+// requireAnyUser     — all authenticated roles including t-3
+export const requireAnyUser     = requireRole('admin', 't-1', 't-2', 't-3');
