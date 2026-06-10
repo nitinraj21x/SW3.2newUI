@@ -61,8 +61,8 @@ html.light {
 /* ── Base ────────────────────────────────────────────────────────────────── */
 @layer base {
   * { box-sizing: border-box; }
-  html { color-scheme: dark; }
-  html.light { color-scheme: light; }
+  /* color-scheme only applies inside the portal — not on the public site */
+  html { color-scheme: normal; }
 
   ::-webkit-scrollbar       { width: 5px; height: 5px; }
   ::-webkit-scrollbar-track { background: var(--scrollbar-track); }

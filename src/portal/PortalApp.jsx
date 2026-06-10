@@ -1,21 +1,33 @@
 /**
  * PortalApp.jsx — kS2
  *
- * Auth: JWT via useAuth (two-step: TOTP for staff, email OTP for clients)
- * Data: fetched from real API via useStore on auth success
+ * All tab components are lazy-loaded — only the active tab's chunk is
+ * downloaded, keeping the initial portal bundle small.
  */
-import { useEffect } from 'react';
-import { Sidebar }       from './components/layout/Sidebar';
-import { Header }        from './components/layout/Header';
-import { LoginPage }     from './components/auth/LoginPage';
-import { OverviewTab }   from './components/overview/OverviewTab';
-import { CandidatesTab } from './components/candidates/CandidatesTab';
-import { JobsTab }       from './components/jobs/JobsTab';
-import { ScoringTab }    from './components/scoring/ScoringTab';
-import { EventsTab }     from './components/events/EventsTab';
-import { AuditTab }      from './components/audit/AuditTab';
+import { useEffect, Suspense, lazy } from 'react';
+import { Sidebar }   from './components/layout/Sidebar';
+import { Header }    from './components/layout/Header';
+import { LoginPage } from './components/auth/LoginPage';
 import useStore, { PERMISSIONS } from './store/useStore';
 import useAuth from './store/useAuth';
+
+// ── Lazy-loaded tab chunks ────────────────────────────────────────────────────
+const OverviewTab   = lazy(() => import('./components/overview/OverviewTab'));
+const CandidatesTab = lazy(() => import('./components/candidates/CandidatesTab'));
+const JobsTab       = lazy(() => import('./components/jobs/JobsTab'));
+const ScoringTab    = lazy(() => import('./components/scoring/ScoringTab'));
+const EventsTab     = lazy(() => import('./components/events/EventsTab'));
+const AuditTab      = lazy(() => import('./components/audit/AuditTab'));
+
+function TabSpinner() {
+  return (
+    <div className="flex-1 flex items-center justify-center"
+      style={{ backgroundColor: 'var(--bg-base)' }}>
+      <div className="w-6 h-6 border-2 border-t-transparent rounded-full animate-spin"
+        style={{ borderColor: 'var(--accent)', borderTopColor: 'transparent' }} />
+    </div>
+  );
+}
 
 export default function PortalApp() {
   const { status, user, logout, init } = useAuth();
@@ -27,19 +39,16 @@ export default function PortalApp() {
   // Verify existing session on mount
   useEffect(() => { init(); }, []); // eslint-disable-line
 
-  // On successful auth: sync user into store + fetch all data
+  // On successful auth: sync user into store + fetch data for this role
   useEffect(() => {
     if (status !== 'authenticated' || !user) return;
-
     setCurrentUser({ id: user.id, _id: user.id, name: user.name, email: user.email, role: user.role, avatar: user.avatar });
-
-    // Fetch data visible to this role
     fetchCandidates();
     if (user.role === 'admin' || user.role === 't-1' || user.role === 't-2') fetchJobs();
     if (user.role === 'admin' || user.role === 't-1') { fetchEvents(); fetchAuditLogs(); }
   }, [status, user]); // eslint-disable-line
 
-  // Loading / init spinner — show while verifying token on mount
+  // Loading spinner while verifying token on mount
   if (status === 'idle' || status === 'loading') {
     return (
       <div className="min-h-screen flex items-center justify-center"
@@ -53,7 +62,6 @@ export default function PortalApp() {
     );
   }
 
-  // Not authenticated → show multi-step login
   if (status !== 'authenticated') return <LoginPage />;
 
   const safeTab = PERMISSIONS.canViewTab(user.role, activeTab)
@@ -67,12 +75,14 @@ export default function PortalApp() {
       <div className="flex-1 flex flex-col min-w-0">
         <Header onLogout={logout} />
         <main className="flex-1 overflow-y-auto" role="main">
-          {safeTab === 'overview'   && PERMISSIONS.canViewTab(user.role, 'overview')   && <OverviewTab />}
-          {safeTab === 'candidates' && <CandidatesTab />}
-          {safeTab === 'jobs'       && PERMISSIONS.canViewJobs(user.role)              && <JobsTab />}
-          {safeTab === 'scoring'    && PERMISSIONS.canViewScoring(user.role)           && <ScoringTab />}
-          {safeTab === 'events'     && PERMISSIONS.canViewEvents(user.role)            && <EventsTab />}
-          {safeTab === 'audit'      && PERMISSIONS.canViewAudit(user.role)             && <AuditTab />}
+          <Suspense fallback={<TabSpinner />}>
+            {safeTab === 'overview'   && PERMISSIONS.canViewTab(user.role, 'overview')   && <OverviewTab />}
+            {safeTab === 'candidates' && <CandidatesTab />}
+            {safeTab === 'jobs'       && PERMISSIONS.canViewJobs(user.role)              && <JobsTab />}
+            {safeTab === 'scoring'    && PERMISSIONS.canViewScoring(user.role)           && <ScoringTab />}
+            {safeTab === 'events'     && PERMISSIONS.canViewEvents(user.role)            && <EventsTab />}
+            {safeTab === 'audit'      && PERMISSIONS.canViewAudit(user.role)             && <AuditTab />}
+          </Suspense>
         </main>
       </div>
     </div>

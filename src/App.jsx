@@ -2,7 +2,8 @@ import { Routes, Route } from 'react-router-dom';
 import { Suspense, lazy, Component } from 'react';
 
 // ── Public site ───────────────────────────────────────────────────────────────
-import PublicSite from './public-site/App.jsx';
+// Lazy-loaded — only downloaded when a user visits a non-portal route
+const PublicSite = lazy(() => import('./public-site/App.jsx'));
 
 // ── Portal — lazy loaded ──────────────────────────────────────────────────────
 const PortalApp = lazy(() => import('./portal/PortalApp.jsx'));
@@ -63,7 +64,11 @@ class PortalErrorBoundary extends Component {
 export default function App() {
   return (
     <Routes>
-      <Route path="/*" element={<PublicSite />} />
+      <Route path="/*" element={
+        <Suspense fallback={<div style={{ minHeight: '100vh', background: '#020617' }} />}>
+          <PublicSite />
+        </Suspense>
+      } />
       <Route
         path="/portal/*"
         element={

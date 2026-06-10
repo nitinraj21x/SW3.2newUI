@@ -1,13 +1,15 @@
 import { create } from 'zustand';
 
-// Persist preference in localStorage
 const STORAGE_KEY = 'cp_theme';
 
 function getInitialTheme() {
-  const stored = localStorage.getItem(STORAGE_KEY);
-  if (stored === 'light' || stored === 'dark') return stored;
-  // Respect OS preference on first visit
-  return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored === 'light' || stored === 'dark') return stored;
+    return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+  } catch {
+    return 'dark'; // SSR / storage unavailable fallback
+  }
 }
 
 function applyTheme(theme) {
@@ -16,14 +18,15 @@ function applyTheme(theme) {
   } else {
     document.documentElement.classList.remove('light');
   }
-  localStorage.setItem(STORAGE_KEY, theme);
+  try { localStorage.setItem(STORAGE_KEY, theme); } catch {}
 }
 
-// Apply immediately (before first render) to avoid flash
-applyTheme(getInitialTheme());
+// Apply once at module load to avoid flash — read theme from storage immediately
+const _initial = getInitialTheme();
+applyTheme(_initial);
 
 const useTheme = create((set) => ({
-  theme: getInitialTheme(),
+  theme: _initial,  // reuse already-computed value
 
   toggleTheme: () =>
     set((state) => {
