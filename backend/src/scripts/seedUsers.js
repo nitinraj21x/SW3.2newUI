@@ -22,25 +22,25 @@ import User     from '../models/User.js';
 
 const SEED = [
   {
-    name:     'SewingCircleAdmin100626',
-    email:    'asha@sewingcircle.io',
-    password: 'TempAdmin@2025!',
+    name:     'S1032cAdmin',
+    email:    'sewingcircleservice@gmail.com',
+    password: 'RDyyt624$$',
     role:     'admin',
     avatar:   'SA',
   },
   {
-    name:     'AshaTvmSc200313',
-    email:    'staff1@sewingcircle.io',
-    password: 'TempStaff@2025!',
+    name:     'Sc9743AshaKamal',
+    email:    'AshaKamal@sewing-circle.org',
+    password: 'AJcbr258@!',
     role:     't-1',
-    avatar:   'AT',
+    avatar:   'AK',
   },
   {
-    name:     'VidyaMayaSc205293',
-    email:    'staff2@sewingcircle.io',
-    password: 'TempStaff@2025!',
+    name:     'Sc5847VidyaShankar',
+    email:    'nitin.raj.25@gmail.com',
+    password: 'LAhep385@#',
     role:     't-1',
-    avatar:   'VM',
+    avatar:   'VS',
   },
 ];
 
@@ -61,17 +61,14 @@ async function seed() {
       passwordHash,
       role:               u.role,
       avatar:             u.avatar,
-      mustChangePassword: true,   // force password change on first login
-      totpEnabled:        false,  // TOTP set up after first-login password change
+      mustChangePassword: false,  // password already set — TOTP setup on first login
+      totpEnabled:        false,
     });
-    console.log(`[created] ${u.email} (${u.role}) — temp password: ${u.password}`);
+    console.log(`[created] ${u.email} (${u.role})`);
   }
 
   await mongoose.disconnect();
-  console.log('');
-  console.log('[done]');
-  console.log('All accounts require a password change on first login.');
-  console.log('Share temp passwords securely. They cannot be recovered after first use.');
+  console.log('\n[done] Accounts seeded. TOTP setup will be prompted on first login.');
 }
 
 seed().catch((err) => { console.error(err); process.exit(1); });

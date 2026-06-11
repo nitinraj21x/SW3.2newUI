@@ -30,11 +30,16 @@ const useAuth = create((set, get) => ({
 
     set({ status: 'loading' });
     try {
-      const user = await api.auth.me();
+      // 8-second timeout — if backend is cold-starting on Render free tier
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 8000);
+      const user = await api.auth.me({ signal: controller.signal });
+      clearTimeout(timeout);
       set({ status: 'authenticated', user, error: null });
-    } catch {
+    } catch (err) {
       sessionStorage.removeItem(TOKEN_KEY);
-      set({ status: 'unauthenticated' });
+      // Don't expose the error — just go to login
+      set({ status: 'unauthenticated', error: null });
     }
   },
 

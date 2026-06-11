@@ -49,6 +49,7 @@ export default function PortalApp() {
   }, [status, user]); // eslint-disable-line
 
   // Loading spinner while verifying token on mount
+  // Falls back to login if status is stuck (e.g. VITE_API_URL not set correctly)
   if (status === 'idle' || status === 'loading') {
     return (
       <div className="min-h-screen flex items-center justify-center"
