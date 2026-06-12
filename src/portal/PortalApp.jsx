@@ -36,8 +36,19 @@ export default function PortalApp() {
     fetchCandidates, fetchJobs, fetchEvents, fetchAuditLogs,
   } = useStore();
 
-  // Verify existing session on mount
-  useEffect(() => { init(); }, []); // eslint-disable-line
+  // Verify existing session on mount — hard 10s fallback to login
+  useEffect(() => {
+    init();
+    // Safety net: if status doesn't transition within 10s, force login page
+    const fallback = setTimeout(() => {
+      const s = useAuth.getState().status;
+      if (s === 'idle' || s === 'loading') {
+        sessionStorage.removeItem('sc_token');
+        useAuth.setState({ status: 'unauthenticated' });
+      }
+    }, 10000);
+    return () => clearTimeout(fallback);
+  }, []); // eslint-disable-line
 
   // On successful auth: sync user into store + fetch data for this role
   useEffect(() => {
@@ -49,16 +60,20 @@ export default function PortalApp() {
   }, [status, user]); // eslint-disable-line
 
   // Loading spinner while verifying token on mount
-  // Falls back to login if status is stuck (e.g. VITE_API_URL not set correctly)
   if (status === 'idle' || status === 'loading') {
     return (
-      <div className="min-h-screen flex items-center justify-center"
-        style={{ backgroundColor: 'var(--bg-base)' }}>
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl"
-            style={{ background: 'linear-gradient(135deg, #06b6d4, #0891b2)' }}>⚡</div>
-          <p className="text-sm" style={{ color: 'var(--text-faint)' }}>Loading portal…</p>
-        </div>
+      <div style={{
+        minHeight: '100vh', display: 'flex', alignItems: 'center',
+        justifyContent: 'center', backgroundColor: '#0a0f1a',
+        flexDirection: 'column', gap: '16px', fontFamily: 'system-ui, sans-serif',
+      }}>
+        <div style={{
+          width: 40, height: 40, borderRadius: 10,
+          background: 'linear-gradient(135deg, #06b6d4, #0891b2)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20,
+        }}>⚡</div>
+        <p style={{ color: '#6b7fa3', fontSize: 14, margin: 0 }}>Loading portal…</p>
+        <p style={{ color: '#2e3f5c', fontSize: 11, margin: 0 }}>status: {status}</p>
       </div>
     );
   }
