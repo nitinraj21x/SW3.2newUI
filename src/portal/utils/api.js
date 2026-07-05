@@ -5,9 +5,12 @@
  * In production:  requests go to VITE_API_URL (Render backend URL)
  */
 
-// Use relative path in dev so the Vite proxy handles CORS.
-// In prod, VITE_API_URL must point to the deployed backend.
-const BASE = import.meta.env.VITE_API_URL ?? '/api';
+// Backend API base URL.
+// VITE_API_URL is set in Render's environment variables and baked in at build time.
+// The hardcoded fallback ensures production always hits the correct backend
+// even if the env var is missing from the build.
+const BASE = import.meta.env.VITE_API_URL
+  || 'https://sewingcirclebackend.onrender.com/api';
 
 function getToken() {
   return sessionStorage.getItem('sc_token');
